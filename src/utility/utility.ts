@@ -17,7 +17,10 @@ async function getMetaData(filepath: FilePath) {
   return data;
 }
 
-export async function getFileMetaDataObj(filepath: FilePath) {
+export async function getFileMetaDataObj(
+  filepath: FilePath,
+  size: "KB" | "MB" = "KB",
+) {
   if (!filepath) throw new Error("No file path provided.");
   const data = await getMetaData(filepath);
 
@@ -27,7 +30,7 @@ export async function getFileMetaDataObj(filepath: FilePath) {
   file_details.extension = path.extname(filepath)
     ? path.extname(filepath)
     : "None";
-  file_details.file_size = `${(data.size / 1024).toFixed(2)} KB`;
+  file_details.file_size = `${(size === "KB" ? data.size / 1024 : data.size / 1024 ** 2).toFixed(2)} ${size}`;
   file_details.created_at = data.birthtime.toLocaleString();
   file_details.modify_at = data.mtime.toLocaleString();
   file_details.Type = data.isFile() ? "File" : "Folder";
@@ -45,14 +48,5 @@ export function fileDetailPrinter(file_details: FileDetails) {
         )
         .join(" ")}: ${file_details[key]}`,
     );
-  }
-}
-
-export function commandListPrinter(command_list: {}) {
-  console.log(
-    "\n\t****** Command List ****** \n\tUsage: filekit [command] ...",
-  );
-  for (let [k, val] of Object.entries(command_list)) {
-    console.log(`\n\t${k}: ${val}`);
   }
 }

@@ -1,28 +1,40 @@
-import {
-  fileDetailPrinter,
-  getFileMetaDataObj,
-  commandListPrinter,
-} from "./utility.js";
+import { Command } from "commander";
+import { fileDetailPrinter, getFileMetaDataObj } from "./utility.js";
 
 const commandListObj = {
   info: "show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info FILEPATH",
 };
 
-if (process.argv[2]) {
-  if (Object.keys(commandListObj).includes(process.argv[2].toLowerCase())) {
+const program = new Command();
+
+program
+  .name("filekit")
+  .description("A command line toolkit for working with files")
+  .version("0.1.0");
+
+program
+  .command("info")
+  .description(commandListObj.info)
+  .option("--json", "outputs in JSON format")
+  .option("--mb", "outputs size in  mb")
+  .argument("<path>", "Path to the file")
+  .action(async (filepath: string, options) => {
     try {
-      if (process.argv[3]) {
-        fileDetailPrinter(await getFileMetaDataObj(process.argv[3]));
-      }else{
-        console.error("No path specified, run `filekit` to see implementation");
-        
+      const data = await getFileMetaDataObj(filepath, options.mb ? "MB" : "KB");
+
+      if (options.json) {
+        console.log(JSON.stringify(data, null, 2));
+      } else {
+        fileDetailPrinter(data);
       }
-    } catch (e: any) {
-      console.error(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.error(e.message);
+      } else {
+        console.error("An unexpexted error occured");
+      }
+      process.exitCode = 1;
     }
-  } else {
-    console.log(`command not found, to view list of commands run 'filekit'`);
-  }
-} else {
-  commandListPrinter(commandListObj);
-}
+  });
+
+await program.parseAsync(process.argv);
