@@ -9,12 +9,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "tsc",
-    "dev": "node ./dist/main.js"
+    "dev": "tsc && node ./dist/main.js info "
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^26.6.6"
+  },
+  "dependencies": {
+    "commander": "^15.1.0"
   }
 }

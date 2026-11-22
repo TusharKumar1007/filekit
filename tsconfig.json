@@ -3,7 +3,8 @@
     "rootDir": "./src",
     "outDir": "./dist",
 
-    "module": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "target": "esnext",
     // For nodejs:
     "lib": ["esnext"],
