@@ -1,22 +1,21 @@
-
 import fs, { readdir } from "node:fs/promises";
 import Path from "node:path";
 
-// Wildcard matching
 function matchesWildcard(name: string, pattern: WildCard): boolean {
-
+  const fileName = name.toLowerCase();
+  const wildcard = pattern.toLowerCase();
 
   // Find files ending with a specific extension
-  if (pattern.startsWith("*")) {
-    return name.endsWith(pattern.slice(1));
+  if (wildcard.startsWith("*")) {
+    return fileName.endsWith(wildcard.slice(1));
   }
 
   // Find files starting with a specific name
-  if (pattern.startsWith("?")) {
-    return name.startsWith(pattern.slice(1));
+  if (wildcard.startsWith("?")) {
+    return fileName.startsWith(wildcard.slice(1));
   }
 
-  return name === pattern;
+  return fileName === wildcard;
 }
 
 type TreeEntry = {
@@ -114,9 +113,7 @@ export async function findIn(
 
     printTree(tree, options);
   } catch (e: unknown) {
-    console.error(
-      e instanceof Error ? e.message : "Something went wrong",
-    );
+    console.error(e instanceof Error ? e.message : "Something went wrong");
 
     process.exitCode = 1;
   }
