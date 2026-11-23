@@ -2,10 +2,13 @@ import { Command } from "commander";
 import { fileDetailPrinter } from "../utility/utility.js";
 import { getFileMetaDataObj } from "./info.js";
 import { printDirectory } from "./tree.js";
+import { findIn } from "./find.js";
 
 const commandListObj = {
   info: "Show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info FILEPATH",
   tree: "Prints all nested item in specified path in a tree format. e.g --> filekit tree PATH",
+  findin:
+    "finds files in a directory using wildcard '*' or '?' . e.g --> filekit findin PATH *.txt or ?logo.\n*-> use if wants to check something ends with.\n?-> use if wants to check something starts with.",
 };
 
 const program = new Command();
@@ -59,6 +62,16 @@ program
     } catch (e: any) {
       console.error(e.message);
     }
+  });
+  
+  program
+  .command("findin")
+  .description(commandListObj.findin)
+  .argument("<path>", "Search folder path")
+  .argument("<wildcard>", "wild card with name")
+  .option("--full", "Show full path after every file | folder.")
+  .action(async (filepath, wildcard,options) => {
+    await findIn(filepath, wildcard,options);
   });
 
 await program.parseAsync(process.argv);

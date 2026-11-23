@@ -9,6 +9,7 @@ declare global {
     Type: "File" | "Folder";
     [key: string]: string;
   }
+  type WildCard = `*.${string}` | `?${string}`;
 }
 
 export function fileDetailPrinter(file_details: FileDetails) {
