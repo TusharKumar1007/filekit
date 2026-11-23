@@ -16,10 +16,12 @@ export async function getFileMetaDataObj(
 
   const file_details = {} as FileDetails;
 
-  file_details.file_name = path.basename(filepath);
+  file_details.file_name = path.basename(
+    [".", "./"].includes(filepath) ? process.cwd() : filepath,
+  );
   file_details.Type = data.isFile() ? "File" : "Folder";
-  file_details.modify_at = data.mtime.toLocaleString();
   file_details.created_at = data.birthtime.toLocaleString();
+  file_details.modify_at = data.mtime.toLocaleString();
 
   if (!data.isDirectory()) {
     file_details.extension = path.extname(filepath)
