@@ -9,7 +9,7 @@ async function getMetaData(filepath: FilePath) {
 
 export async function getFileMetaDataObj(
   filepath: FilePath,
-  size: "KB" | "MB" = "KB",
+  size: "KB" | "MB" | "GB" = "KB",
 ) {
   if (!filepath) throw new Error("No file path provided.");
   const data = await getMetaData(filepath);
@@ -27,12 +27,12 @@ export async function getFileMetaDataObj(
     file_details.extension = path.extname(filepath)
       ? path.extname(filepath)
       : "None";
-    file_details.file_size = `${(size === "KB" ? data.size / 1024 : data.size / 1024 ** 2).toFixed(2)} ${size}`;
+    file_details.file_size = `${(size === "KB" ? data.size / 1024 : size === "MB" ? data.size / 1024 ** 2 : data.size / 1024 ** 3).toFixed(2)} ${size}`;
 
     return file_details;
   }
   const sizeInBytes = (await getDirectorySize(filepath)) as number;
-  file_details.file_size = `${(size === "KB" ? sizeInBytes / 1024 : sizeInBytes / 1024 ** 2).toFixed(2)} ${size}`;
+  file_details.file_size = `${(size === "KB" ? sizeInBytes / 1024 : size === "MB" ? sizeInBytes / 1024 ** 2 : sizeInBytes / 1024 ** 3).toFixed(2)} ${size}`;
 
   return file_details;
 }

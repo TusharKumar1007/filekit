@@ -20,10 +20,14 @@ program
   .description(commandListObj.info)
   .option("--json", "outputs in JSON format")
   .option("--mb", "outputs size in  mb")
+  .option("--gb", "outputs size in  gb")
   .argument("<path>", "Path to the file")
   .action(async (filepath: string, options) => {
     try {
-      const data = await getFileMetaDataObj(filepath, options.mb ? "MB" : "KB");
+      const data = await getFileMetaDataObj(
+        filepath,
+        options.mb ? "MB" : options.gb ? "GB" : "KB",
+      );
 
       if (options.json) {
         console.log(JSON.stringify(data, null, 2));
