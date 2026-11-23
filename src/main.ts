@@ -1,3 +1,2 @@
 #!/usr/bin/env node
-import "./utility/commander.js"
-
+import "./commands/commander.js";

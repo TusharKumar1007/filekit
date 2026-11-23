@@ -1,5 +1,6 @@
 import { Command } from "commander";
-import { fileDetailPrinter, getFileMetaDataObj } from "./utility.js";
+import { fileDetailPrinter } from "../utility/utility.js";
+import { getFileMetaDataObj } from "./info.js";
 
 const commandListObj = {
   info: "show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info FILEPATH",
