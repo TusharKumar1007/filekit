@@ -1,9 +1,11 @@
 import { Command } from "commander";
 import { fileDetailPrinter } from "../utility/utility.js";
 import { getFileMetaDataObj } from "./info.js";
+import { printDirectory } from "./tree.js";
 
 const commandListObj = {
-  info: "show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info FILEPATH",
+  info: "Show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info FILEPATH",
+  tree: "Prints all nested item in specified path in a tree format. e.g --> filekit tree PATH",
 };
 
 const program = new Command();
@@ -35,6 +37,23 @@ program
         console.error("An unexpexted error occured");
       }
       process.exitCode = 1;
+    }
+  });
+
+program
+  .command("tree")
+  .description(commandListObj.tree)
+  .option("--full", "Show full path after every file | folder.")
+  .argument("<path>", "Folder Path")
+  .action(async (path, options) => {
+    try {
+      if (options.full) {
+        await printDirectory(path, (options = { full: options.full }));
+      } else {
+        await printDirectory(path);
+      }
+    } catch (e: any) {
+      console.error(e.message);
     }
   });
 
