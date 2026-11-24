@@ -3,12 +3,15 @@ import { fileDetailPrinter } from "../utility/utility.js";
 import { getFileMetaDataObj } from "./info.js";
 import { printDirectory } from "./tree.js";
 import { findIn } from "./find.js";
+import { open, reveal } from "./open.js";
 
 const commandListObj = {
   info: "Show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info FILEPATH",
   tree: "Prints all nested item in specified path in a tree format. e.g --> filekit tree PATH",
   findin:
     "finds files in a directory using wildcard '*' or '?' . e.g --> filekit findin PATH *.txt or ?logo.\n*-> use if wants to check something ends with.\n?-> use if wants to check something starts with.",
+  open: "Open the file | folder on the path specified. e.g --> filekit open PATH",
+  reveal: "Open the folder containing the file. e.g --> filekit reveal PATH",
 };
 
 const program = new Command();
@@ -63,15 +66,31 @@ program
       console.error(e.message);
     }
   });
-  
-  program
+
+program
   .command("findin")
   .description(commandListObj.findin)
   .argument("<path>", "Search folder path")
   .argument("<wildcard>", "wild card with name")
   .option("--full", "Show full path after every file | folder.")
-  .action(async (filepath, wildcard,options) => {
-    await findIn(filepath, wildcard,options);
+  .action(async (filepath, wildcard, options) => {
+    await findIn(filepath, wildcard, options);
+  });
+
+program
+  .command("open")
+  .description(commandListObj.open)
+  .argument("<path>", "Path of File or folder you want open")
+  .action(async (filepath) => {
+    await open(filepath);
+  });
+
+program
+  .command("reveal")
+  .description(commandListObj.reveal)
+  .argument("<path>", "Reveals the file in folder")
+  .action(async (filepath) => {
+    await reveal(filepath);
   });
 
 await program.parseAsync(process.argv);
