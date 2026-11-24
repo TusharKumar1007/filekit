@@ -6,7 +6,7 @@ declare global {
     file_size: string;
     created_at: string;
     modify_at: string;
-    Type: "File" | "Folder";
+    Type: `${string} File` | "Folder";
     [key: string]: string;
   }
   type WildCard = `*.${string}` | `?${string}`;
@@ -17,7 +17,7 @@ declare global {
     Num_Folders: number;
   };
 
-  type ExtentionType=keyof typeof fileExtensions;
+  type ExtentionType = keyof typeof fileExtensions;
 }
 
 export const fileExtensions = {
@@ -108,7 +108,6 @@ export const fileExtensions = {
   ".gz": "GZIP Archive",
   ".lock": "Lock File",
 };
-
 
 export function fileDetailPrinter(file_details: FileDetails) {
   for (let key of Object.keys(file_details)) {

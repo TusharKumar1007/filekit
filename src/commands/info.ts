@@ -20,13 +20,17 @@ export async function getFileMetaDataObj(
   file_details.file_name = path.basename(
     [".", "./"].includes(filepath) ? process.cwd() : filepath,
   );
-  file_details.Type = data.isFile() ? "File" : "Folder";
+
+  const extention = path.extname(filepath) as ExtentionType;
+
+  file_details.Type = data.isFile()
+    ? `${fileExtensions[extention]} File`
+    : "Folder";
   file_details.Location = path.resolve(filepath);
   file_details.created_at = data.birthtime.toLocaleString();
   file_details.modify_at = data.mtime.toLocaleString();
 
   if (!data.isDirectory()) {
-    const extention = path.extname(filepath) as ExtentionType;
     file_details.extension = extention
       ? `${extention} (${fileExtensions[extention]})`
       : "None";
