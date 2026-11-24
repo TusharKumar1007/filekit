@@ -10,6 +10,12 @@ declare global {
     [key: string]: string;
   }
   type WildCard = `*.${string}` | `?${string}`;
+
+  type Info = {
+    Directory_Size: number;
+    Num_File: number;
+    Num_Folders: number;
+  };
 }
 
 export function fileDetailPrinter(file_details: FileDetails) {

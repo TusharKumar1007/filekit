@@ -2,6 +2,9 @@ import fs, { readdir } from "node:fs/promises";
 import Path from "node:path";
 
 let Directory_Size: number = 0;
+let Num_File: number = 0;
+let Num_Folders: number = 0;
+
 
 export async function printDirectory(
   path: string,
@@ -37,7 +40,9 @@ export async function printDirectory(
   }
 }
 
-export async function getDirectorySize(path: string) {
+export async function getDirectorySize(
+  path: string,
+): Promise<Info | undefined> {
   try {
     await fs.access(path);
   } catch (e: unknown) {
@@ -53,13 +58,15 @@ export async function getDirectorySize(path: string) {
       const new_path = Path.join(path, `${dir}/`);
       if ((await fs.stat(new_path)).isFile()) {
         Directory_Size += (await fs.stat(new_path)).size;
+        Num_File += 1;
       }
 
       if ((await fs.stat(new_path)).isDirectory()) {
+        Num_Folders += 1;
         await getDirectorySize(new_path);
       }
     }
-    return Directory_Size;
+    return { Directory_Size, Num_Folders, Num_File };
   } catch (e: any) {
     console.error(e.message);
   }

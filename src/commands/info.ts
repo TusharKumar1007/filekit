@@ -20,6 +20,7 @@ export async function getFileMetaDataObj(
     [".", "./"].includes(filepath) ? process.cwd() : filepath,
   );
   file_details.Type = data.isFile() ? "File" : "Folder";
+  file_details.Location = path.resolve(filepath);
   file_details.created_at = data.birthtime.toLocaleString();
   file_details.modify_at = data.mtime.toLocaleString();
 
@@ -31,8 +32,12 @@ export async function getFileMetaDataObj(
 
     return file_details;
   }
-  const sizeInBytes = (await getDirectorySize(filepath)) as number;
-  file_details.file_size = `${(size === "KB" ? sizeInBytes / 1024 : size === "MB" ? sizeInBytes / 1024 ** 2 : sizeInBytes / 1024 ** 3).toFixed(2)} ${size}`;
+  const { Directory_Size, Num_File, Num_Folders } = (await getDirectorySize(
+    filepath,
+  )) as Info;
+  file_details.file_size = `${(size === "KB" ? Directory_Size / 1024 : size === "MB" ? Directory_Size / 1024 ** 2 : Directory_Size / 1024 ** 3).toFixed(2)} ${size}`;
+  file_details.Files = `${Num_File}`;
+  file_details.Folders = `${Num_Folders}`;
 
   return file_details;
 }
