@@ -24,7 +24,7 @@ export async function getFileMetaDataObj(
   const extention = path.extname(filepath) as ExtentionType;
 
   file_details.Type = data.isFile()
-    ? `${fileExtensions[extention]} File`
+    ? `${fileExtensions[extention] ? fileExtensions[extention] : "Unknown"} File`
     : "Folder";
   file_details.Location = path.resolve(filepath);
   file_details.created_at = data.birthtime.toLocaleString();
