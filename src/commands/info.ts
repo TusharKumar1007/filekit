@@ -10,7 +10,7 @@ async function getMetaData(filepath: FilePath) {
 
 export async function getFileMetaDataObj(
   filepath: FilePath,
-  size: "KB" | "MB" | "GB" = "KB",
+  size: "Bytes" | "KB" | "MB" | "GB" = "Bytes",
 ) {
   if (!filepath) throw new Error("No file path provided.");
   const data = await getMetaData(filepath);
@@ -34,16 +34,14 @@ export async function getFileMetaDataObj(
     file_details.extension = extention
       ? `${extention} (${fileExtensions[extention]})`
       : "None";
-    file_details.file_size = `${(size === "KB" ? data.size / 1024 : size === "MB" ? data.size / 1024 ** 2 : data.size / 1024 ** 3).toFixed(2)} ${size}`;
+    file_details.file_size = `${size !== "Bytes" ? (size === "KB" ? data.size / 1024 : size === "MB" ? data.size / 1024 ** 2 : data.size / 1024 ** 3).toFixed(2) : data.size} ${size}`;
 
     return file_details;
   }
-  const { Directory_Size, Num_File, Num_Folders } = (await getDirectorySize(
-    filepath,
-  )) as Info;
-  file_details.file_size = `${(size === "KB" ? Directory_Size / 1024 : size === "MB" ? Directory_Size / 1024 ** 2 : Directory_Size / 1024 ** 3).toFixed(2)} ${size}`;
-  file_details.Files = `${Num_File}`;
-  file_details.Folders = `${Num_Folders}`;
+  const { files, folders, total_size } = await getDirectorySize(filepath);
+  file_details.file_size = `${size !== "Bytes" ? (size === "KB" ? total_size / 1024 : size === "MB" ? total_size / 1024 ** 2 : total_size / 1024 ** 3).toFixed(2) : total_size} ${size}`;
+  file_details.Files = `${files}`;
+  file_details.Folders = `${folders}`;
 
   return file_details;
 }

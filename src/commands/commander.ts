@@ -25,6 +25,7 @@ program
   .command("info")
   .description(commandListObj.info)
   .option("--json", "outputs in JSON format")
+  .option("--kb", "outputs size in  kb")
   .option("--mb", "outputs size in  mb")
   .option("--gb", "outputs size in  gb")
   .argument("<path>", "Path to the file")
@@ -32,7 +33,7 @@ program
     try {
       const data = await getFileMetaDataObj(
         filepath,
-        options.mb ? "MB" : options.gb ? "GB" : "KB",
+        options.mb ? "MB" : options.gb ? "GB" : options.kb ? "KB" : "Bytes",
       );
 
       if (options.json) {
@@ -58,7 +59,7 @@ program
   .action(async (path, options) => {
     try {
       if (options.full) {
-        await printDirectory(path, (options = { full: options.full }));
+        await printDirectory(path, options);
       } else {
         await printDirectory(path);
       }
