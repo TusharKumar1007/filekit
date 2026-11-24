@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs/promises";
 import { getDirectorySize } from "./tree.js";
+import { fileExtensions } from "../utility/utility.js";
 
 async function getMetaData(filepath: FilePath) {
   const data = await fs.stat(filepath);
@@ -25,8 +26,9 @@ export async function getFileMetaDataObj(
   file_details.modify_at = data.mtime.toLocaleString();
 
   if (!data.isDirectory()) {
-    file_details.extension = path.extname(filepath)
-      ? path.extname(filepath)
+    const extention = path.extname(filepath) as ExtentionType;
+    file_details.extension = extention
+      ? `${extention} (${fileExtensions[extention]})`
       : "None";
     file_details.file_size = `${(size === "KB" ? data.size / 1024 : size === "MB" ? data.size / 1024 ** 2 : data.size / 1024 ** 3).toFixed(2)} ${size}`;
 
