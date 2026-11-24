@@ -6,12 +6,12 @@ import { findIn } from "./find.js";
 import { open, reveal } from "./open.js";
 
 const commandListObj = {
-  info: "Show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info FILEPATH",
-  tree: "Prints all nested item in specified path in a tree format. e.g --> filekit tree PATH",
+  info: "Show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info <FILEPATH>",
+  tree: "Prints all nested item in specified path in a tree format. e.g --> filekit tree <PATH>",
   findin:
-    "finds files in a directory using wildcard '*' or '?' . e.g --> filekit findin PATH *.txt or ?logo.\n*-> use if wants to check something ends with.\n?-> use if wants to check something starts with.",
-  open: "Open the file | folder on the path specified. e.g --> filekit open PATH",
-  reveal: "Open the folder containing the file. e.g --> filekit reveal PATH",
+    "finds files in a directory using wildcard '*' or '?' . e.g --> filekit findin <PATH> *.txt or ?logo.\n*-> use if wants to check something ends with.\n?-> use if wants to check something starts with.",
+  open: "Open the file | folder on the path specified. e.g --> filekit open <PATH>",
+  reveal: "Open the folder containing the file. e.g --> filekit reveal <PATH>",
 };
 
 const program = new Command();
