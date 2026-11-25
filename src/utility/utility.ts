@@ -1,3 +1,5 @@
+import Path from "node:path";
+
 declare global {
   type FilePath = string;
   interface FileDetails {
@@ -342,4 +344,13 @@ export function fileDetailPrinter(file_details: FileDetails) {
         .join(" ")}: ${file_details[key]}`,
     );
   }
+}
+
+export function IsParent(relative: string): boolean {
+  return (
+    relative !== "" &&
+    relative !== ".." &&
+    !relative.startsWith(`..${Path.sep}`) &&
+    !Path.isAbsolute(relative)
+  );
 }

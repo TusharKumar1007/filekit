@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import Path from "node:path";
+import { IsParent } from "../utility/utility.js";
 
 export async function clear(path: string) {
   try {
@@ -13,11 +14,7 @@ export async function clear(path: string) {
     // Reject ancestors of current working directory
     const relative = Path.relative(full_path, cwd);
 
-    const isParent =
-      relative !== "" &&
-      relative !== ".." &&
-      !relative.startsWith(`..${Path.sep}`) &&
-      !Path.isAbsolute(relative);
+    const isParent: boolean = IsParent(relative);
 
     if (isParent) {
       throw new Error(
@@ -78,11 +75,7 @@ export async function deleteAt(path: string) {
     // Check whether target is an ancestor of cwd
     const relative = Path.relative(full_path, cwd);
 
-    const isParent =
-      relative !== "" &&
-      relative !== ".." &&
-      !relative.startsWith(`..${Path.sep}`) &&
-      !Path.isAbsolute(relative);
+    const isParent = IsParent(relative);
 
     if (isParent) {
       throw new Error(
