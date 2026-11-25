@@ -6,6 +6,7 @@ import { findIn } from "./find.js";
 import { open, reveal } from "./open.js";
 import { commandListObj } from "../utility/utility.js";
 import { clear, deleteAt } from "./delete.js";
+import { copy } from "./copy.js";
 
 const program = new Command();
 
@@ -101,6 +102,14 @@ program
   .argument("<path>", "Path to the folder you want to delete.")
   .action(async (filepath) => {
     await deleteAt(filepath);
+  });
+program
+  .command("copy")
+  .description(commandListObj.copy)
+  .argument("<source path>", "Path of the file or folder you want to copy.")
+  .argument("<destination path>", "Path to the folder you want to copy it to.")
+  .action(async (src, dest) => {
+    await copy(src, dest);
   });
 
 await program.parseAsync(process.argv);

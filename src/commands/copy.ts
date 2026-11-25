@@ -1,25 +1,39 @@
 import fs from "node:fs/promises";
 import Path from "node:path";
+import { IsParent } from "../utility/utility.js";
 
-export async function copy(what_path: string, where_path: string) {
+export async function copy(src: string, dest: string) {
   try {
-    const dest_path = Path.resolve(where_path);
-    const src_path = Path.resolve(what_path);
-    const src = await fs.lstat(what_path);
-    const dest = await fs.lstat(where_path);
-    if (!dest.isDirectory()) {
-      throw new Error(`${dest_path} is not a Folder`);
-    }
-    if (src.isFile()) {
-      await fs.copyFile(what_path, where_path);
-      console.log(`File '${src_path}' moved to '${dest_path}'`);
+    const src_info = await fs.lstat(src);
+    const src_path = Path.resolve(src);
+    const dest_path = Path.resolve(dest);
+
+    const isParent = IsParent(src_path, dest_path);
+    if (isParent)
+      throw new Error(
+        `Cannot copy '${dest_path}': it is a parent of the current working directory.`,
+      );
+
+    if (src_info.isFile()) {
+      await fs.mkdir(dest_path, { recursive: true });
+
+      const file_dest = Path.join(dest_path, Path.basename(src));
+
+      await fs.copyFile(src_path, file_dest);
+
+      console.log(`Copied File '${src_path}' to '${file_dest}'`);
       return true;
     }
-    await fs.cp(what_path, where_path);
-    console.log(`Folder '${src_path}' moved to '${dest_path}'`);
+
+    if (src_info.isDirectory()) {
+      await fs.cp(src_path, dest_path, { recursive: true });
+
+      console.log(`Copied Folder '${src_path}' to '${dest_path}'`);
+      return true;
+    }
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Unknown Error";
-    console.log(`Error: ${message}`);
+    console.log(message);
     return false;
   }
 }

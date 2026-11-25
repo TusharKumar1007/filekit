@@ -12,9 +12,8 @@ export async function clear(path: string) {
     const cwd = Path.resolve(process.cwd());
 
     // Reject ancestors of current working directory
-    const relative = Path.relative(full_path, cwd);
 
-    const isParent: boolean = IsParent(relative);
+    const isParent: boolean = IsParent(full_path, cwd);
 
     if (isParent) {
       throw new Error(
@@ -73,9 +72,8 @@ export async function deleteAt(path: string) {
     }
 
     // Check whether target is an ancestor of cwd
-    const relative = Path.relative(full_path, cwd);
 
-    const isParent = IsParent(relative);
+    const isParent = IsParent(full_path, cwd);
 
     if (isParent) {
       throw new Error(

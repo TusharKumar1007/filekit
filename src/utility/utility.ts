@@ -33,6 +33,7 @@ export const commandListObj = {
     "Clears the contents of the Directory at the given path but preserves the actual Directory itself. e.g --> filekit clear <PATH>",
   delete:
     "Completely deletes Files and Folder at path. e.g --> filekit clear <PATH>",
+  copy: "Copies file or folder from source ---> destination. e.g --> filekit copy <SOURCE PATH> <DESTINATION_PATH>",
 };
 
 export const fileExtensions = {
@@ -346,7 +347,8 @@ export function fileDetailPrinter(file_details: FileDetails) {
   }
 }
 
-export function IsParent(relative: string): boolean {
+export function IsParent(full_path: string, cwd: string): boolean {
+  const relative = Path.relative(full_path, cwd);
   return (
     relative !== "" &&
     relative !== ".." &&
