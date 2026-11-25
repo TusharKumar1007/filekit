@@ -20,6 +20,19 @@ declare global {
   type ExtentionType = keyof typeof fileExtensions;
 }
 
+export const commandListObj = {
+  info: "Show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info <FILEPATH>",
+  tree: "Prints all nested item in specified path in a tree format. e.g --> filekit tree <PATH>",
+  findin:
+    "finds files in a directory using wildcard '*' or '?' . e.g --> filekit findin <PATH> *.txt or ?logo.\n*-> use if wants to check something ends with.\n?-> use if wants to check something starts with.",
+  open: "Open the file | folder on the path specified. e.g --> filekit open <PATH>",
+  reveal: "Open the folder containing the file. e.g --> filekit reveal <PATH>",
+  clear:
+    "Clears the contents of the Directory at the given path but preserves the actual Directory itself. e.g --> filekit clear <PATH>",
+  delete:
+    "Completely deletes Files and Folder at path. e.g --> filekit clear <PATH>",
+};
+
 export const fileExtensions = {
   // JavaScript / TypeScript
   ".js": "JavaScript",

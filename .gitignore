@@ -3,5 +3,5 @@ dist/
 .env
 .env.*
 !.env.example
-Experiments/
+Experiments*
 test.js

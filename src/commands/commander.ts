@@ -4,15 +4,8 @@ import { getFileMetaDataObj } from "./info.js";
 import { printDirectory } from "./tree.js";
 import { findIn } from "./find.js";
 import { open, reveal } from "./open.js";
-
-const commandListObj = {
-  info: "Show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info <FILEPATH>",
-  tree: "Prints all nested item in specified path in a tree format. e.g --> filekit tree <PATH>",
-  findin:
-    "finds files in a directory using wildcard '*' or '?' . e.g --> filekit findin <PATH> *.txt or ?logo.\n*-> use if wants to check something ends with.\n?-> use if wants to check something starts with.",
-  open: "Open the file | folder on the path specified. e.g --> filekit open <PATH>",
-  reveal: "Open the folder containing the file. e.g --> filekit reveal <PATH>",
-};
+import { commandListObj } from "../utility/utility.js";
+import { clear, deleteAt } from "./delete.js";
 
 const program = new Command();
 
@@ -92,6 +85,22 @@ program
   .argument("<path>", "Reveals the file in folder")
   .action(async (filepath) => {
     await reveal(filepath);
+  });
+
+program
+  .command("clear")
+  .description(commandListObj.clear)
+  .argument("<path>", "Path to the folder you want to clear.")
+  .action(async (filepath) => {
+    await clear(filepath);
+  });
+
+program
+  .command("delete")
+  .description(commandListObj.delete)
+  .argument("<path>", "Path to the folder you want to delete.")
+  .action(async (filepath) => {
+    await deleteAt(filepath);
   });
 
 await program.parseAsync(process.argv);
