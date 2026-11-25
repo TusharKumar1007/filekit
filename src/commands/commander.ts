@@ -7,13 +7,14 @@ import { open, reveal } from "./open.js";
 import { commandListObj } from "../utility/utility.js";
 import { clear, deleteAt } from "./delete.js";
 import { copy } from "./copy.js";
+import { createFile, createFolder } from "./create.js";
 
 const program = new Command();
 
 program
   .name("filekit")
   .description("A command line toolkit for working with files")
-  .version("0.1.0");
+  .version("0.1.5");
 
 program
   .command("info")
@@ -110,6 +111,21 @@ program
   .argument("<destination path>", "Path to the folder you want to copy it to.")
   .action(async (src, dest) => {
     await copy(src, dest);
+  });
+program
+  .command("mkdir")
+  .description(commandListObj.mkdir)
+  .argument("<path>", "Path to the folder you want to create.")
+  .action(async (path: string) => {
+    await createFolder(path);
+  });
+program
+  .command("touch")
+  .description(commandListObj.touch)
+  .argument("<path>", "Path to the file you want to create.")
+  .option("--force", "Builds the path to achive file creation.")
+  .action(async (path: string, option: { force: boolean }) => {
+    await createFile(path, option);
   });
 
 await program.parseAsync(process.argv);

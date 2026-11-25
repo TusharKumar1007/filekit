@@ -34,6 +34,8 @@ export const commandListObj = {
   delete:
     "Completely deletes Files and Folder at path. e.g --> filekit clear <PATH>",
   copy: "Copies file or folder from source ---> destination. e.g --> filekit copy <SOURCE PATH> <DESTINATION_PATH>",
+  mkdir: "Creates directory at the given path. e.g --> filekit mkdir <PATH>",
+  touch: "Creates file at the given path. e.g --> filekit touch <PATH>",
 };
 
 export const fileExtensions = {

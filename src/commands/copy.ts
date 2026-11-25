@@ -17,7 +17,7 @@ export async function copy(src: string, dest: string) {
     if (src_info.isFile()) {
       await fs.mkdir(dest_path, { recursive: true });
 
-      const file_dest = Path.join(dest_path, Path.basename(src));
+      const file_dest = Path.join(dest_path, Path.basename(src_path));
 
       await fs.copyFile(src_path, file_dest);
 
@@ -26,7 +26,8 @@ export async function copy(src: string, dest: string) {
     }
 
     if (src_info.isDirectory()) {
-      await fs.cp(src_path, dest_path, { recursive: true });
+      const folder_dest = Path.join(dest_path, Path.basename(src_path));
+      await fs.cp(src_path, folder_dest, { recursive: true });
 
       console.log(`Copied Folder '${src_path}' to '${dest_path}'`);
       return true;
