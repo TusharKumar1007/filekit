@@ -110,8 +110,9 @@ program
   .description(commandListObj.copy)
   .argument("<source path>", "Path of the file or folder you want to copy.")
   .argument("<destination path>", "Path to the folder you want to copy it to.")
-  .action(async (src, dest) => {
-    await copy(src, dest);
+  .option("--force", "Overwrites already existing file or folder.")
+  .action(async (src, dest,options) => {
+    await copy(src, dest,options);
   });
 program
   .command("mkdir")
@@ -135,7 +136,7 @@ program
   .argument("<destination path>", "Path to the folder you want to move to.")
   .option("--force", "Overwrites already existing file or folder")
   .action(async (src: string, dest: string, option: { force: boolean }) => {
-    await move(src, dest,option);
+    await move(src, dest, option);
   });
 
 await program.parseAsync(process.argv);
