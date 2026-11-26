@@ -5,3 +5,4 @@ dist/
 !.env.example
 Experiments*
 test.js
+*.tgz
