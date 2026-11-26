@@ -15,7 +15,7 @@ const program = new Command();
 program
   .name("filekit")
   .description("A command line toolkit for working with files")
-  .version("0.1.5");
+  .version("1.0.0");
 
 program
   .command("info")
@@ -111,8 +111,8 @@ program
   .argument("<source path>", "Path of the file or folder you want to copy.")
   .argument("<destination path>", "Path to the folder you want to copy it to.")
   .option("--force", "Overwrites already existing file or folder.")
-  .action(async (src, dest,options) => {
-    await copy(src, dest,options);
+  .action(async (src, dest, options) => {
+    await copy(src, dest, options);
   });
 program
   .command("mkdir")

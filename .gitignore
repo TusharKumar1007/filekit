@@ -6,3 +6,4 @@ dist/
 Experiments*
 test.js
 *.tgz
+release/
