@@ -5,14 +5,22 @@ function matchesWildcard(name: string, pattern: WildCard): boolean {
   const fileName = name.toLowerCase();
   const wildcard = pattern.toLowerCase();
 
-  // Find files ending with a specific extension
   if (wildcard.startsWith("*")) {
-    return fileName.endsWith(wildcard.slice(1));
+    const search = wildcard.slice(1);
+
+    const extension = Path.extname(fileName);
+    const nameWithoutExt = Path.basename(fileName, extension);
+
+    return fileName.endsWith(search) || nameWithoutExt.endsWith(search);
   }
 
-  // Find files starting with a specific name
   if (wildcard.startsWith("?")) {
-    return fileName.startsWith(wildcard.slice(1));
+    const search = wildcard.slice(1);
+
+    const extension = Path.extname(fileName);
+    const nameWithoutExt = Path.basename(fileName, extension);
+
+    return fileName.startsWith(search) || nameWithoutExt.startsWith(search);
   }
 
   return fileName === wildcard;
