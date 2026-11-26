@@ -7,7 +7,7 @@ import { open, reveal } from "./open.js";
 import { commandListObj } from "../utility/utility.js";
 import { clear, deleteAt } from "./delete.js";
 import { copy } from "./copy.js";
-import { createFile, createFolder } from "./create.js";
+import { createFile, createFiles, createFolder } from "./create.js";
 import { move } from "./move.js";
 
 const program = new Command();
@@ -124,10 +124,10 @@ program
 program
   .command("touch")
   .description(commandListObj.touch)
-  .argument("<path>", "Path to the file you want to create.")
+  .argument("<path...>", "Path to the file you want to create.")
   .option("--force", "Builds the path to achive file creation.")
-  .action(async (path: string, option: { force: boolean }) => {
-    await createFile(path, option);
+  .action(async (paths: string[], option: { force: boolean }) => {
+    await createFiles(paths, option);
   });
 program
   .command("move")

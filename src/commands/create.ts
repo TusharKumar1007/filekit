@@ -1,65 +1,80 @@
 import fs from "node:fs/promises";
 import Path from "node:path";
 
+type CreateOptions = {
+  force: boolean;
+};
+
 export async function createFolder(path: string) {
   try {
     const full_path = Path.resolve(path);
 
-    const base_folder_info = await fs.readdir(Path.dirname(path));
+    await fs.mkdir(full_path);
 
-    if (base_folder_info.includes(Path.basename(path))) {
-      throw {
-        message: "Folder already exists",
-        code: "EEXIST",
-        path: full_path,
-      };
-    }
-    await fs.mkdir(full_path, { recursive: true });
-    console.log(`Folder crated at ${full_path}`);
+    console.log(`Folder created at ${full_path}`);
+    return true;
   } catch (e: any) {
-    if (e instanceof Error) {
-      console.log(e.message);
-      return false;
-    }
-    if (e.code.toLowerCase() === "eexist") {
-      console.log(`Folder already exists ${e.path}`);
-      return false;
-    }
-    console.log(e);
-  }
-}
-export async function createFile(path: string, options: { force: boolean }) {
-  try {
-    const dir_path = Path.resolve(Path.dirname(path));
-    const file_path = Path.resolve(path);
-    if (options.force) {
-      await createFolder(dir_path);
-    }
-
-    await fs.access(dir_path);
-
-    const dir_details = await fs.readdir(dir_path);
-
-    if (dir_details.includes(Path.basename(file_path))) {
-      throw {
-        message: "File already exists",
-        code: "EEXIST",
-        path: file_path,
-      };
-    }
-    await fs.writeFile(file_path, "");
-    console.log(`File crated at ${file_path}`);
-  } catch (e: any) {
-    if (e.code.toLowerCase() === "eexist") {
-      console.log(`${e.message}, ${e.path}`);
-    } else if (e.code.toLowerCase() === "enoent") {
-      console.log(
-        `Path you are trying to create file at, does not exists. ${e.path}. Use '--force' to create file with path`,
-      );
+    if (e?.code === "EEXIST") {
+      console.log(`Folder already exists: ${Path.resolve(path)}`);
+    } else if (e?.code === "ENOENT") {
+      console.log(`Parent directory does not exist: ${e.path}`);
     } else {
-      console.log(e);
+      console.error(`Error: ${e?.message ?? "Unknown error"}`);
     }
 
     return false;
   }
+}
+
+async function createSingleFile(path: string, options: CreateOptions) {
+  try {
+    const file_path = Path.resolve(path);
+    const dir_path = Path.dirname(file_path);
+
+    if (options.force) {
+      await fs.mkdir(dir_path, { recursive: true });
+    }
+
+    await fs.writeFile(file_path, "", { flag: "wx" });
+
+    console.log(`File created at ${file_path}`);
+    return true;
+  } catch (e: any) {
+    if (e?.code === "EEXIST") {
+      console.log(`File already exists: ${Path.resolve(path)}`);
+    } else if (e?.code === "ENOENT") {
+      console.log(
+        `Parent directory does not exist: ${Path.dirname(Path.resolve(path))}. Use '--force' to create it.`,
+      );
+    } else if (e?.code === "EISDIR") {
+      console.log(
+        `Cannot create file: path is a directory: ${Path.resolve(path)}`,
+      );
+    } else if (e?.code === "EACCES" || e?.code === "EPERM") {
+      console.log(`Permission denied: ${Path.resolve(path)}`);
+    } else {
+      console.error(`Error: ${e?.message ?? "Unknown error"}`);
+    }
+
+    return false;
+  }
+}
+
+export async function createFile(path: string, options: CreateOptions) {
+  return createSingleFile(path, options);
+}
+
+export async function createFiles(paths: string[], options: CreateOptions) {
+  if (paths.length === 0) {
+    console.error("Error: No file paths provided.");
+    return false;
+  }
+
+  const results: boolean[] = [];
+
+  for (const path of paths) {
+    results.push(await createSingleFile(path, options));
+  }
+
+  return results.every(Boolean);
 }
