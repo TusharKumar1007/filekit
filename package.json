@@ -1,20 +1,44 @@
 {
-  "name": "filekit",
+  "name": "@tusharkumar1007/filekit",
   "version": "1.0.0",
-  "description": "",
+  "description": "A command-line utility for inspecting, searching, and managing files and directories.",
   "type": "module",
   "bin": {
     "filekit": "./dist/main.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node ./dist/main.js",
-    "dev": "npm run build && node ./dist/main.js -h",
+    "dev": "npm run build && node ./dist/main.js",
     "prepack": "npm run build"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "filekit",
+    "cli",
+    "file-management",
+    "file-inspection",
+    "directory",
+    "filesystem",
+    "developer-tools"
+  ],
+  "author": "Tushar Kumar",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TusharKumar1007/filekit.git"
+  },
+  "homepage": "https://github.com/TusharKumar1007/filekit#readme",
+  "bugs": {
+    "url": "https://github.com/TusharKumar1007/filekit/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "devDependencies": {
     "@types/node": "^26.6.6"
   },
