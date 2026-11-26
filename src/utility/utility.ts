@@ -36,6 +36,7 @@ export const commandListObj = {
   copy: "Copies file or folder from source ---> destination. e.g --> filekit copy <SOURCE PATH> <DESTINATION_PATH>",
   mkdir: "Creates directory at the given path. e.g --> filekit mkdir <PATH>",
   touch: "Creates file at the given path. e.g --> filekit touch <PATH>",
+  move: "Moves file or folder from onw location to another. e.g --> filekit move <SOURCE PATH> <DESTINATION PATH>",
 };
 
 export const fileExtensions = {

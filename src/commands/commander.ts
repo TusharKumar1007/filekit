@@ -8,6 +8,7 @@ import { commandListObj } from "../utility/utility.js";
 import { clear, deleteAt } from "./delete.js";
 import { copy } from "./copy.js";
 import { createFile, createFolder } from "./create.js";
+import { move } from "./move.js";
 
 const program = new Command();
 
@@ -126,6 +127,15 @@ program
   .option("--force", "Builds the path to achive file creation.")
   .action(async (path: string, option: { force: boolean }) => {
     await createFile(path, option);
+  });
+program
+  .command("move")
+  .description(commandListObj.move)
+  .argument("<source path>", "Path to the file or folder you want to move.")
+  .argument("<destination path>", "Path to the folder you want to move to.")
+  .option("--force", "Overwrites already existing file or folder")
+  .action(async (src: string, dest: string, option: { force: boolean }) => {
+    await move(src, dest,option);
   });
 
 await program.parseAsync(process.argv);
