@@ -1,5 +1,6 @@
 import fs, { readdir } from "node:fs/promises";
 import Path from "node:path";
+import { errorC, linksOrInfoC } from "../utility/colors.js";
 
 function matchesWildcard(name: string, pattern: WildCard): boolean {
   const fileName = name.toLowerCase();
@@ -83,7 +84,7 @@ function printTree(
 
     console.log(
       `${prefix}${pointer}${entry?.name}${
-        options.full ? ` (${entry?.fullpath})` : ""
+        options.full ? linksOrInfoC(`(${entry?.fullpath})`,true) : ""
       }`,
     );
 
@@ -107,7 +108,7 @@ export async function findIn(
     const stat = await fs.stat(path);
 
     if (!stat.isDirectory()) {
-      console.error("Path is not a directory");
+      errorC("Path is not a directory");
       process.exitCode = 1;
       return;
     }
@@ -121,7 +122,7 @@ export async function findIn(
 
     printTree(tree, options);
   } catch (e: unknown) {
-    console.error(e instanceof Error ? e.message : "Something went wrong");
+    errorC(e instanceof Error ? e.message : "Something went wrong");
 
     process.exitCode = 1;
   }

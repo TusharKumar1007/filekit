@@ -1,6 +1,6 @@
 {
   "name": "@tusharkumar1007/filekit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A command-line utility for inspecting, searching, and managing files and directories.",
   "type": "module",
   "bin": {
@@ -45,6 +45,7 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "chalk": "^6.0.1",
     "commander": "^15.1.0"
   }
 }

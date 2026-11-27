@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import Path from "node:path";
 import { IsParent } from "../utility/utility.js";
+import { errorC, linksOrInfoC, sucessC, warningC } from "../utility/colors.js";
 
 export async function clear(path: string) {
   try {
@@ -17,7 +18,7 @@ export async function clear(path: string) {
 
     if (isParent) {
       throw new Error(
-        `Cannot clear '${full_path}': it is an ancestor of the current working directory.`,
+        `Cannot clear '${linksOrInfoC(full_path, true)}': it is an ancestor of the current working directory.`,
       );
     }
 
@@ -30,18 +31,22 @@ export async function clear(path: string) {
     const info = await fs.lstat(full_path);
 
     if (info.isSymbolicLink()) {
-      throw new Error(`'${full_path}' is a symbolic link. Operation rejected.`);
+      throw new Error(
+        `'${linksOrInfoC(full_path, true)}' is a symbolic link. Operation rejected.`,
+      );
     }
 
     if (!info.isDirectory()) {
-      throw new Error(`'${full_path}' is not a directory. Use delete instead.`);
+      throw new Error(
+        `'${linksOrInfoC(full_path, true)}' is not a directory. Use delete instead.`,
+      );
     }
 
     // Read and remove contents
     const entries = await fs.readdir(full_path);
 
     if (entries.length === 0) {
-      console.log(`'${full_path}' is already empty.`);
+      warningC(`'${linksOrInfoC(full_path, true)}' is already empty.`);
       return;
     }
 
@@ -50,9 +55,9 @@ export async function clear(path: string) {
       await fs.rm(new_path, { recursive: true });
     }
 
-    console.log(`Folder cleared at '${full_path}'`);
+    sucessC(`Folder cleared at '${linksOrInfoC(full_path, true)}'`);
   } catch (e) {
-    console.error(`Error: ${e instanceof Error ? e.message : "Unknown error"}`);
+    errorC(`Error: ${e instanceof Error ? e.message : "Unknown error"}`);
     process.exitCode = 1;
   }
 }
@@ -77,7 +82,7 @@ export async function deleteAt(path: string) {
 
     if (isParent) {
       throw new Error(
-        `Cannot delete '${full_path}': it is a parent of the current working directory.`,
+        `Cannot delete '${linksOrInfoC(full_path, true)}': it is a parent of the current working directory.`,
       );
     }
 
@@ -90,17 +95,24 @@ export async function deleteAt(path: string) {
     const info = await fs.lstat(full_path);
 
     if (info.isSymbolicLink()) {
-      throw new Error(`'${full_path}' is a symbolic link. Operation rejected.`);
+      throw new Error(
+        `'${linksOrInfoC(full_path, true)}' is a symbolic link. Operation rejected.`,
+      );
     }
 
     await fs.rm(full_path, { recursive: true });
 
-    console.log(`Deleted '${full_path}'`);
+    sucessC(`Deleted '${linksOrInfoC(full_path, true)}'`);
 
     return true;
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Unknown filesystem error";
+  } catch (e: any) {
+    if (e.code === "ENOENT") {
+      errorC(`Error: Invalid path '${e.path}'`);
+    } else {
+      const message =
+        e instanceof Error ? e.message : "Unknown filesystem error";
 
-    console.error(`Error: ${message}`);
+      errorC(`Error: ${message}`);
+    }
   }
 }

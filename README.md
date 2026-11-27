@@ -10,9 +10,9 @@ FileKit is a Node.js command-line toolkit for inspecting, searching, opening, cr
 
 ## Prerequisites and Compatibility
 
-- **Node.js:** `>=20` (as specified in `package.json` `engines.node`). The project uses ES Modules (`"type": "module"`) and Node.js built-in modules (`node:fs/promises`, `node:path`, `node:child_process`).
-- **npm:** Needed to install the package or manage dependencies.
-- **TypeScript (`tsc`):** Required only if building from source (`npm run build` runs `tsc`, and `typescript` is not listed in `package.json` `devDependencies`).
+- **Node.js:** `>=20` (as specified in `package.json` `engines.node`). The project uses ES Modules (`"type": "module"`) and Node.js built-in modules (`node:fs/promises`, `node:path`, `node:child_process`, `node:perf_hooks`).
+- **npm:** Needed to install the package or manage dependencies (`commander`, `chalk`, and `devDependencies` such as `typescript`).
+- **TypeScript (`tsc`):** Included in `package.json` `devDependencies` (`typescript`) for building from source with `npm run build`.
 - **Platform notes for `open` and `reveal`:**
   - **Windows (`win32`):** Uses `explorer.exe`.
   - **macOS (`darwin`):** Uses `open`.
@@ -46,8 +46,6 @@ npm install
 npm run build
 ```
 
-> **Note:** `npm run build` executes `tsc`. Ensure TypeScript is installed in your environment (for example, `npm install -g typescript`) before building.
-
 To link the `filekit` binary globally from your local clone:
 
 ```bash
@@ -72,11 +70,16 @@ filekit [options] [command]
 
 | Flag / Command | Description |
 | --- | --- |
-| `-V`, `--version` | Output the CLI version (`0.1.5` in `src/commands/commander.ts`; `package.json` version is `1.0.0`) |
+| `-V`, `--version` | Output the CLI version (`1.0.1`) |
 | `-h`, `--help` | Display help for the CLI or a specific command |
 | `help [command]` | Display help for a specific command |
 
 > **Command Aliases:** None of the FileKit subcommands define command aliases.
+
+### Execution Timing (`--time`) and Styled Output
+
+- **`--time` flag (all subcommands):** Every subcommand supports `--time` to measure and print execution duration (`Completed in <duration>`) using `node:perf_hooks` (`performance.now()`). Duration automatically scales across `ms`, `seconds`, `min ... sec`, and `hr ... min ... sec`.
+- **Colorized terminal output:** Output uses `chalk` for status prefixes (`✔` success, `⚠` warnings, `✖` errors), highlighted paths/flags, and formatted metadata labels.
 
 ---
 
@@ -95,6 +98,7 @@ Displays metadata for a file or directory, including name, type (mapped from kno
   - `--kb` — Output size in KB (`2` decimal places).
   - `--mb` — Output size in MB (`2` decimal places).
   - `--gb` — Output size in GB (`2` decimal places).
+  - `--time` — Output command execution time.
 - **Defaults:**
   - Output format: Human-readable key-value lines (`File Name`, `Type`, `Location`, `Created At`, `Modify At`, plus `Extension` for files or `Files`/`Folders` for directories, and `File Size`).
   - Size unit: `Bytes`. If multiple size flags are supplied, precedence is `--mb` > `--gb` > `--kb` > `Bytes`.
@@ -104,7 +108,7 @@ Displays metadata for a file or directory, including name, type (mapped from kno
 ```bash
 filekit info ./package.json
 filekit info ./src --mb
-filekit info ./package.json --kb --json
+filekit info ./package.json --kb --json --time
 ```
 
 ---
@@ -119,12 +123,13 @@ Recursively prints all nested files and folders under the specified directory in
   - `<path>` *(required)* — Folder path.
 - **Options:**
   - `--full` — Show the joined path in parentheses after every file or folder name. *(Default: `false`)*
+  - `--time` — Output command execution time.
 
 **Examples:**
 
 ```bash
 filekit tree ./src
-filekit tree ./src --full
+filekit tree ./src --full --time
 ```
 
 ---
@@ -143,13 +148,14 @@ Recursively searches a directory for files matching a wildcard pattern and print
     - Any other value — Exact case-insensitive match against the full filename.
 - **Options:**
   - `--full` — Show the full path in parentheses after every matched file or folder. *(Default: `false`)*
+  - `--time` — Output command execution time.
 
 **Examples:**
 
 ```bash
 filekit findin ./src "*.ts"
 filekit findin ./src "?info"
-filekit findin ./src "package.json" --full
+filekit findin ./src "package.json" --full --time
 ```
 
 ---
@@ -158,17 +164,18 @@ filekit findin ./src "package.json" --full
 
 Opens a file or folder with the operating system's default handler (`explorer.exe` on Windows, `open` on macOS, `xdg-open` on other platforms).
 
-- **Syntax:** `filekit open <path>`
+- **Syntax:** `filekit open [options] <path>`
 - **Aliases:** None
 - **Arguments:**
   - `<path>` *(required)* — Path of the file or folder to open.
-- **Options:** None (apart from `-h, --help`).
+- **Options:**
+  - `--time` — Output command execution time.
 
 **Examples:**
 
 ```bash
 filekit open ./package.json
-filekit open ./src
+filekit open ./src --time
 ```
 
 ---
@@ -177,17 +184,18 @@ filekit open ./src
 
 Reveals a file in its containing folder or opens a directory using the platform file manager (`explorer.exe` on Windows, `open` on macOS, `xdg-open` on other platforms). For files, it passes `"/select,"` before the resolved file path.
 
-- **Syntax:** `filekit reveal <path>`
+- **Syntax:** `filekit reveal [options] <path>`
 - **Aliases:** None
 - **Arguments:**
   - `<path>` *(required)* — Path to the file or folder to reveal.
-- **Options:** None (apart from `-h, --help`).
+- **Options:**
+  - `--time` — Output command execution time.
 
 **Examples:**
 
 ```bash
 filekit reveal ./src/main.ts
-filekit reveal ./src
+filekit reveal ./src --time
 ```
 
 ---
@@ -196,11 +204,12 @@ filekit reveal ./src
 
 Removes all contents inside a directory recursively while preserving the directory itself.
 
-- **Syntax:** `filekit clear <path>`
+- **Syntax:** `filekit clear [options] <path>`
 - **Aliases:** None
 - **Arguments:**
   - `<path>` *(required)* — Path to the folder to clear.
-- **Options:** None (apart from `-h, --help`).
+- **Options:**
+  - `--time` — Output command execution time.
 - **Safety Behavior:**
   - Rejects empty/whitespace paths, filesystem roots, symbolic links, non-directory paths, and ancestors of the current working directory.
 
@@ -208,6 +217,7 @@ Removes all contents inside a directory recursively while preserving the directo
 
 ```bash
 filekit clear ./temp-output
+filekit clear ./temp-output --time
 ```
 
 ---
@@ -216,11 +226,12 @@ filekit clear ./temp-output
 
 Permanently deletes a file or directory (recursively) at the specified path.
 
-- **Syntax:** `filekit delete <path>`
+- **Syntax:** `filekit delete [options] <path>`
 - **Aliases:** None
 - **Arguments:**
   - `<path>` *(required)* — Path to the file or folder to delete.
-- **Options:** None (apart from `-h, --help`).
+- **Options:**
+  - `--time` — Output command execution time.
 - **Safety Behavior:**
   - Rejects empty/whitespace paths, the current working directory, ancestors/parents of the current working directory, filesystem roots, and symbolic links.
 
@@ -228,7 +239,7 @@ Permanently deletes a file or directory (recursively) at the specified path.
 
 ```bash
 filekit delete ./old-file.txt
-filekit delete ./temp-folder
+filekit delete ./temp-folder --time
 ```
 
 ---
@@ -244,6 +255,7 @@ Copies a file or folder into a destination directory (`<destination path>/<sourc
   - `<destination path>` *(required)* — Path to the destination folder.
 - **Options:**
   - `--force` — Overwrite an already existing file or folder at the destination. *(Default: `false`; fails if target already exists)*
+  - `--time` — Output command execution time.
 - **Safety Behavior:**
   - Rejects copying an ancestor of the current working directory.
   - Rejects copying a directory into itself or one of its subdirectories.
@@ -252,7 +264,7 @@ Copies a file or folder into a destination directory (`<destination path>/<sourc
 
 ```bash
 filekit copy ./notes.txt ./backup
-filekit copy ./assets ./dist-assets --force
+filekit copy ./assets ./dist-assets --force --time
 ```
 
 ---
@@ -261,16 +273,18 @@ filekit copy ./assets ./dist-assets --force
 
 Creates a new directory at the given path. Its parent directory must already exist (non-recursive).
 
-- **Syntax:** `filekit mkdir <path>`
+- **Syntax:** `filekit mkdir [options] <path>`
 - **Aliases:** None
 - **Arguments:**
   - `<path>` *(required)* — Path to the folder to create.
-- **Options:** None (apart from `-h, --help`).
+- **Options:**
+  - `--time` — Output command execution time.
 
 **Examples:**
 
 ```bash
 filekit mkdir ./logs
+filekit mkdir ./logs --time
 ```
 
 ---
@@ -285,13 +299,14 @@ Creates one or more empty files at the specified paths without overwriting exist
   - `<path...>` *(required, variadic)* — One or more file paths to create.
 - **Options:**
   - `--force` — Automatically create missing parent directories before creating each file. *(Default: `false`; fails if parent directory does not exist)*
+  - `--time` — Output command execution time.
 
 **Examples:**
 
 ```bash
 filekit touch ./notes.txt
 filekit touch ./a.txt ./b.txt
-filekit touch ./nested/dir/app.log --force
+filekit touch ./nested/dir/app.log --force --time
 ```
 
 ---
@@ -307,6 +322,7 @@ Moves a file or folder into an existing destination directory (`<destination pat
   - `<destination path>` *(required)* — Path to an existing destination directory.
 - **Options:**
   - `--force` — Overwrite an already existing file or folder at the destination (copies recursively then removes the source). *(Default: `false`; uses `fs.rename` and fails if target exists or across filesystems with `EXDEV`)*
+  - `--time` — Output command execution time.
 - **Safety Behavior:**
   - Rejects non-directory destinations.
   - Rejects moving an ancestor of the current working directory.
@@ -316,7 +332,7 @@ Moves a file or folder into an existing destination directory (`<destination pat
 
 ```bash
 filekit move ./draft.txt ./archive
-filekit move ./build-temp ./archive --force
+filekit move ./build-temp ./archive --force --time
 ```
 
 ---
@@ -338,7 +354,7 @@ To run a CLI command locally during development without linking globally:
 
 ```bash
 npm run build
-node ./dist/main.js info ./package.json
+node ./dist/main.js info ./package.json --time
 ```
 
 ---

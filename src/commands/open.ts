@@ -1,7 +1,8 @@
-import fs from "node:fs/promises";
 import { spawn } from "node:child_process";
-import path, { win32 } from "node:path";
-import { Command } from "commander";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { errorC } from "../utility/colors.js";
+import { linksOrInfoC } from "../utility/colors.js";
 
 export async function open(filepath: string) {
   const fullPath = path.resolve(filepath);
@@ -10,7 +11,9 @@ export async function open(filepath: string) {
     try {
       await fs.access(fullPath);
     } catch {
-      throw new Error(`Path does not exist or is inaccessible: ${fullPath}`);
+      throw new Error(
+        `Path does not exist or is inaccessible: ${linksOrInfoC(fullPath, true)}`,
+      );
     }
 
     let command: string;
@@ -34,7 +37,7 @@ export async function open(filepath: string) {
 
     child.unref();
   } catch {
-    throw new Error(`Invalid path: ${fullPath}`);
+    throw new Error(`Invalid path: ${linksOrInfoC(fullPath, true)}`);
   }
 }
 
@@ -45,7 +48,7 @@ export async function reveal(filepath: string): Promise<void> {
     try {
       stat = await fs.stat(fullpath);
     } catch {
-      throw new Error(`Invalid Path: ${fullpath}`);
+      throw new Error(`Invalid Path: ${linksOrInfoC(fullpath, true)}`);
     }
     let args: string[];
     let command: string;
@@ -71,6 +74,6 @@ export async function reveal(filepath: string): Promise<void> {
 
     child.unref();
   } catch (e: any) {
-    console.error(e.message);
+    errorC(e.message);
   }
 }

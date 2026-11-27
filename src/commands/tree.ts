@@ -1,16 +1,12 @@
 import fs, { readdir } from "node:fs/promises";
 import Path from "node:path";
-
-let Directory_Size: number = 0;
-let Num_File: number = 0;
-let Num_Folders: number = 0;
+import { errorC, linksOrInfoC } from "../utility/colors.js";
 
 interface DirectoryStats {
   total_size: number;
   files: number;
   folders: number;
 }
-
 
 export async function printDirectory(
   path: string,
@@ -19,11 +15,6 @@ export async function printDirectory(
 ) {
   try {
     await fs.access(path);
-  } catch (e: unknown) {
-    console.error("Path does not exists");
-  }
-
-  try {
     const cur_dir = await readdir(path);
     if (cur_dir.length === 0) return;
 
@@ -33,7 +24,7 @@ export async function printDirectory(
       const pointer = isLast ? "└── " : "├── ";
       const new_path = Path.join(path, `${dir}/`);
       console.log(
-        `${prefix}${pointer}${dir} ${options?.full ? "(" + new_path + ")" : ""}`,
+        `${prefix}${pointer}${dir} ${options?.full ? linksOrInfoC(`(${new_path})`, true) : ""}`,
       );
 
       if ((await fs.stat(new_path)).isDirectory()) {
@@ -42,7 +33,11 @@ export async function printDirectory(
       }
     }
   } catch (e: any) {
-    console.error(e.message);
+    if (e.code === "ENOENT") {
+      errorC(`Error: Invalid path '${e.path}'`);
+    } else {
+      errorC(`Error: ${e.message}`);
+    }
   }
 }
 
@@ -78,7 +73,6 @@ export async function printDirectory(
 //   }
 // }
 
-
 export async function getDirectorySize(
   directory: string,
 ): Promise<DirectoryStats> {
@@ -95,7 +89,7 @@ export async function getDirectorySize(
       withFileTypes: true,
     });
   } catch (error) {
-    console.error(`Unable to read directory: ${directory}`);
+    errorC(`Unable to read directory: ${directory}`);
     return result;
   }
 
@@ -118,7 +112,7 @@ export async function getDirectorySize(
         result.files++;
       }
     } catch (error) {
-      console.error(`Unable to inspect: ${fullPath}`);
+      errorC(`Unable to inspect: ${fullPath}`);
     }
   }
 

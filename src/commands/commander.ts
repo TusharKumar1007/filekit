@@ -1,21 +1,23 @@
-import { Command } from "commander";
+import { Command, Option } from "commander";
 import { fileDetailPrinter } from "../utility/utility.js";
-import { getFileMetaDataObj } from "./info.js";
-import { printDirectory } from "./tree.js";
-import { findIn } from "./find.js";
-import { open, reveal } from "./open.js";
-import { commandListObj } from "../utility/utility.js";
-import { clear, deleteAt } from "./delete.js";
+import { commandListObj } from "../utility/info.js";
 import { copy } from "./copy.js";
-import { createFile, createFiles, createFolder } from "./create.js";
+import { createFiles, createFolder } from "./create.js";
+import { clear, deleteAt } from "./delete.js";
+import { findIn } from "./find.js";
+import { getFileMetaDataObj } from "./info.js";
 import { move } from "./move.js";
+import { open, reveal } from "./open.js";
+import { printDirectory } from "./tree.js";
+import { measureTime } from "../utility/timer.js";
+import { errorC } from "../utility/colors.js";
 
 const program = new Command();
 
 program
   .name("filekit")
   .description("A command line toolkit for working with files")
-  .version("1.0.0");
+  .version("1.0.1");
 
 program
   .command("info")
@@ -24,44 +26,50 @@ program
   .option("--kb", "outputs size in  kb")
   .option("--mb", "outputs size in  mb")
   .option("--gb", "outputs size in  gb")
+  .option("--time", "outputs Execution time")
   .argument("<path>", "Path to the file")
   .action(async (filepath: string, options) => {
-    try {
-      const data = await getFileMetaDataObj(
-        filepath,
-        options.mb ? "MB" : options.gb ? "GB" : options.kb ? "KB" : "Bytes",
-      );
+    await measureTime(async () => {
+      try {
+        const data = await getFileMetaDataObj(
+          filepath,
+          options.mb ? "MB" : options.gb ? "GB" : options.kb ? "KB" : "Bytes",
+        );
 
-      if (options.json) {
-        console.log(JSON.stringify(data, null, 2));
-      } else {
-        fileDetailPrinter(data);
+        if (options.json) {
+          console.log(JSON.stringify(data, null, 2));
+        } else {
+          fileDetailPrinter(data);
+        }
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          errorC(e.message);
+        } else {
+          errorC("An unexpexted error occured");
+        }
+        process.exitCode = 1;
       }
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.error(e.message);
-      } else {
-        console.error("An unexpexted error occured");
-      }
-      process.exitCode = 1;
-    }
+    }, options.time);
   });
 
 program
   .command("tree")
   .description(commandListObj.tree)
   .option("--full", "Show full path after every file | folder.")
+  .option("--time", "outputs Execution time")
   .argument("<path>", "Folder Path")
   .action(async (path, options) => {
-    try {
-      if (options.full) {
-        await printDirectory(path, options);
-      } else {
-        await printDirectory(path);
+    await measureTime(async () => {
+      try {
+        if (options.full) {
+          await printDirectory(path, options);
+        } else {
+          await printDirectory(path);
+        }
+      } catch (e: any) {
+        errorC(e.message);
       }
-    } catch (e: any) {
-      console.error(e.message);
-    }
+    }, options.time);
   });
 
 program
@@ -70,40 +78,55 @@ program
   .argument("<path>", "Search folder path")
   .argument("<wildcard>", "wild card with name")
   .option("--full", "Show full path after every file | folder.")
+  .option("--time", "outputs Execution time")
   .action(async (filepath, wildcard, options) => {
-    await findIn(filepath, wildcard, options);
+    await measureTime(async () => {
+      await findIn(filepath, wildcard, options);
+    }, options.time);
   });
 
 program
   .command("open")
   .description(commandListObj.open)
   .argument("<path>", "Path of File or folder you want open")
-  .action(async (filepath) => {
-    await open(filepath);
+  .option("--time", "outputs Execution time")
+  .action(async (filepath, options) => {
+    await measureTime(async () => {
+      await open(filepath);
+    }, options.time);
   });
 
 program
   .command("reveal")
   .description(commandListObj.reveal)
   .argument("<path>", "Reveals the file in folder")
-  .action(async (filepath) => {
-    await reveal(filepath);
+  .option("--time", "outputs Execution time")
+  .action(async (filepath, options) => {
+    await measureTime(async () => {
+      await reveal(filepath);
+    }, options.time);
   });
 
 program
   .command("clear")
   .description(commandListObj.clear)
   .argument("<path>", "Path to the folder you want to clear.")
-  .action(async (filepath) => {
-    await clear(filepath);
+  .option("--time", "outputs Execution time")
+  .action(async (filepath, options) => {
+    await measureTime(async () => {
+      await clear(filepath);
+    }, options.time);
   });
 
 program
   .command("delete")
   .description(commandListObj.delete)
   .argument("<path>", "Path to the folder you want to delete.")
-  .action(async (filepath) => {
-    await deleteAt(filepath);
+  .option("--time", "outputs Execution time")
+  .action(async (filepath, options) => {
+    await measureTime(async () => {
+      await deleteAt(filepath);
+    }, options.time);
   });
 program
   .command("copy")
@@ -111,32 +134,52 @@ program
   .argument("<source path>", "Path of the file or folder you want to copy.")
   .argument("<destination path>", "Path to the folder you want to copy it to.")
   .option("--force", "Overwrites already existing file or folder.")
-  .action(async (src, dest, options) => {
-    await copy(src, dest, options);
+  .option("--time", "outputs Execution time")
+  .action(async (src:string, dest:string, options:{force:boolean,time:boolean}) => {
+    await measureTime(async () => {
+      await copy(src, dest, options);
+    }, options.time);
   });
 program
   .command("mkdir")
   .description(commandListObj.mkdir)
   .argument("<path>", "Path to the folder you want to create.")
-  .action(async (path: string) => {
-    await createFolder(path);
+  .option("--time", "outputs Execution time")
+  .action(async (path: string, options) => {
+    await measureTime(async () => {
+      await createFolder(path);
+    }, options.time);
   });
 program
   .command("touch")
   .description(commandListObj.touch)
   .argument("<path...>", "Path to the file you want to create.")
   .option("--force", "Builds the path to achive file creation.")
-  .action(async (paths: string[], option: { force: boolean }) => {
-    await createFiles(paths, option);
-  });
+  .option("--time", "outputs Execution time")
+  .action(
+    async (paths: string[], option: { force: boolean; time: boolean }) => {
+      await measureTime(async () => {
+        await createFiles(paths, option);
+      }, option.time);
+    },
+  );
 program
   .command("move")
   .description(commandListObj.move)
   .argument("<source path>", "Path to the file or folder you want to move.")
   .argument("<destination path>", "Path to the folder you want to move to.")
   .option("--force", "Overwrites already existing file or folder")
-  .action(async (src: string, dest: string, option: { force: boolean }) => {
-    await move(src, dest, option);
-  });
+  .option("--time", "outputs Execution time")
+  .action(
+    async (
+      src: string,
+      dest: string,
+      option: { force: boolean; time: boolean },
+    ) => {
+      await measureTime(async () => {
+        await move(src, dest, option);
+      }, option.time);
+    },
+  );
 
 await program.parseAsync(process.argv);

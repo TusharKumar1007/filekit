@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs/promises";
 import { getDirectorySize } from "./tree.js";
-import { fileExtensions } from "../utility/utility.js";
+import { fileExtensions } from "../utility/info.js";
 
 async function getMetaData(filepath: FilePath) {
   const data = await fs.stat(filepath);

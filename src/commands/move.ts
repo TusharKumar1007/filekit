@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import Path from "node:path";
 import { IsParent } from "../utility/utility.js";
+import { errorC, sucessC, warningC, linksOrInfoC } from "../utility/colors.js";
 
 export async function move(
   src: string,
@@ -15,7 +16,7 @@ export async function move(
     const dest_info = await fs.lstat(dest_path);
 
     if (!dest_info.isDirectory()) {
-      throw new Error(`${dest_path} is not a directory.`);
+      throw new Error(`${linksOrInfoC(dest_path, true)} is not a directory.`);
     }
 
     if (IsParent(src_path, process.cwd())) {
@@ -32,7 +33,9 @@ export async function move(
       !relative.startsWith(".." + Path.sep) &&
       !Path.isAbsolute(relative)
     ) {
-      throw new Error(`Cannot move '${src_path}' into itself.`);
+      throw new Error(
+        `Cannot move '${linksOrInfoC(src_path, true)}' into itself.`,
+      );
     }
 
     const dest_move_path = Path.join(dest_path, Path.basename(src_path));
@@ -48,7 +51,7 @@ export async function move(
 
     if (destExists && !option.force) {
       const error: any = new Error(
-        `File or folder already exists: '${dest_move_path}'. Use '--force' to overwrite matching files.`,
+        `File or folder already exists: '${linksOrInfoC(dest_move_path, true)}'. Use '--force' to overwrite matching files.`,
       );
 
       error.code = "EEXIST";
@@ -71,8 +74,8 @@ export async function move(
       await fs.rename(src_path, dest_move_path);
     }
 
-    console.log(
-      `${option.force ? "Overwrite happend when moved" : "Moved"} '${src_path}' to '${dest_path}'`,
+    sucessC(
+      `${option.force ? "Overwrite happend when moved" : "Moved"} '${linksOrInfoC(src_path, true)}' to '${linksOrInfoC(dest_path, true)}'`,
     );
 
     return true;
@@ -80,15 +83,13 @@ export async function move(
     const code = e?.code?.toUpperCase();
 
     if (code === "ENOENT") {
-      console.error(`Error: Invalid path '${e.path}'`);
+      errorC(`Error: Invalid path '${linksOrInfoC(e.path)}'`);
     } else if (code === "EEXIST") {
-      console.error(`Error: ${e.message}`);
+      warningC(`Error: ${e.message}`);
     } else if (code === "EXDEV") {
-      console.error(
-        "Error: Cannot move across different filesystems using rename.",
-      );
+      errorC("Error: Cannot move across different filesystems using rename.");
     } else {
-      console.error(`Error: ${e.message}`);
+      errorC(`Error: ${e.message}`);
     }
 
     process.exitCode = 1;
