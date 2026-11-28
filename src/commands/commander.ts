@@ -10,7 +10,7 @@ import { move } from "./move.js";
 import { open, reveal } from "./open.js";
 import { printDirectory } from "./tree.js";
 import { measureTime } from "../utility/timer.js";
-import { errorC } from "../utility/colors.js";
+import { errorC, linksOrInfoC } from "../utility/colors.js";
 
 const program = new Command();
 
@@ -41,8 +41,12 @@ program
         } else {
           fileDetailPrinter(data);
         }
-      } catch (e: unknown) {
-        if (e instanceof Error) {
+      } catch (e: any) {
+        if (e.code.toLowerCase() === "enoent") {
+          errorC(
+            `Invalid Path no such file or directory: ${linksOrInfoC(e.path, true)}`,
+          );
+        } else if (e instanceof Error) {
           errorC(e.message);
         } else {
           errorC("An unexpexted error occured");
@@ -135,11 +139,17 @@ program
   .argument("<destination path>", "Path to the folder you want to copy it to.")
   .option("--force", "Overwrites already existing file or folder.")
   .option("--time", "outputs Execution time")
-  .action(async (src:string, dest:string, options:{force:boolean,time:boolean}) => {
-    await measureTime(async () => {
-      await copy(src, dest, options);
-    }, options.time);
-  });
+  .action(
+    async (
+      src: string,
+      dest: string,
+      options: { force: boolean; time: boolean },
+    ) => {
+      await measureTime(async () => {
+        await copy(src, dest, options);
+      }, options.time);
+    },
+  );
 program
   .command("mkdir")
   .description(commandListObj.mkdir)

@@ -1,7 +1,5 @@
-
 import { performance } from "node:perf_hooks";
 import chalk from "chalk";
-
 
 export function formatDuration(ms: number): string {
   if (ms < 1000) {
@@ -13,8 +11,8 @@ export function formatDuration(ms: number): string {
   }
 
   if (ms < 3_600_000) {
-    const minutes = Math.floor(ms / 60_000);
-    const seconds = ((ms % 60_000) / 1000).toFixed(2);
+    const minutes = Math.floor(ms / 60_000); //2m30s 150s --> 150_000/60_000 --> 2m
+    const seconds = ((ms % 60_000) / 1000).toFixed(2); //2m30s 150s --> 150_000%60_000 --> 30_000/1000 --> 30sec
 
     return `${minutes} min ${seconds} sec`;
   }
@@ -26,10 +24,9 @@ export function formatDuration(ms: number): string {
   return `${hours} hr ${minutes} min ${seconds} sec`;
 }
 
-
 export async function measureTime<T>(
   operation: () => Promise<T>,
-  enabled: boolean
+  enabled: boolean,
 ): Promise<T> {
   if (!enabled) {
     return operation();
@@ -43,8 +40,7 @@ export async function measureTime<T>(
     const duration = performance.now() - start;
 
     console.log(
-      chalk.gray("Completed in ") +
-      chalk.cyan.bold(formatDuration(duration))
+      chalk.gray("Completed in ") + chalk.cyan.bold(formatDuration(duration)),
     );
   }
 }
