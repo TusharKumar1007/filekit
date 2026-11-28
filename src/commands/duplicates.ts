@@ -60,6 +60,7 @@ export async function printDuplicateInfo(duplicates: DuplicatesMap) {
     let duplicateGroups = 0;
     let duplicateFiles = 0;
     let wastedSpace = 0;
+    let inSizeWastedSpace = "";
 
     for (const [hash, files] of duplicates) {
       if (files.length > 1) {
@@ -79,8 +80,11 @@ export async function printDuplicateInfo(duplicates: DuplicatesMap) {
 
         wastedSpace += savedSpace;
 
+        const inSizeSavedSpace = savedSpace > 1024 ** 2 ? "mb" : "kb";
+        inSizeWastedSpace = wastedSpace > 1024 ** 2 ? "mb" : "kb";
+
         sucessC(
-          `  Disk space wasted: ${(savedSpace / 1024 ** 2).toFixed(2)} MB\n`,
+          `  Disk space wasted: ${(inSizeSavedSpace === "kb" ? savedSpace / 1024 : savedSpace / 1024 ** 2).toFixed(2)} ${inSizeSavedSpace.toUpperCase()} \n`,
         );
       }
     }
@@ -95,7 +99,9 @@ export async function printDuplicateInfo(duplicates: DuplicatesMap) {
     console.log(`Duplicate groups: ${duplicateGroups}`);
     console.log(`Duplicate files: ${duplicateFiles}`);
 
-    sucessC(`Total wasted space: ${(wastedSpace / 1024 ** 2).toFixed(2)} MB`);
+    sucessC(
+      `Total wasted space: ${(inSizeWastedSpace === "mb" ? wastedSpace / 1024 ** 2 : wastedSpace / 1024).toFixed(2)} ${inSizeWastedSpace.toUpperCase()}`,
+    );
   } catch (error: unknown) {
     if (error instanceof Error) {
       errorC(`Unable to print duplicate information: ${error.message}`);

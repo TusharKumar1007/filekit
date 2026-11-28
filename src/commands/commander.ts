@@ -10,7 +10,7 @@ import { move } from "./move.js";
 import { open, reveal } from "./open.js";
 import { printDirectory } from "./tree.js";
 import { measureTime } from "../utility/timer.js";
-import { errorC,linksOrInfoC } from "../utility/colors.js";
+import { errorC,linksOrInfoC, sucessC } from "../utility/colors.js";
 import { getDuplicates, printDuplicateInfo } from "../commands/duplicates.js";
 
 const program = new Command();
@@ -199,7 +199,7 @@ program
   .option("--time", "outputs Execution time")
   .action(async (path: string, option: { time: boolean }) => {
     await measureTime(async () => {
-      
+      sucessC("finding duplicates...\n")
       const info = (await getDuplicates(path)) as DuplicatesMap;
       await printDuplicateInfo(info);
     }, option.time);
