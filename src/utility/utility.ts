@@ -22,6 +22,7 @@ declare global {
   };
 
   type ExtentionType = keyof typeof fileExtensions;
+  type DuplicatesMap = Map<string, string[]>;
 }
 
 export function fileDetailPrinter(file_details: FileDetails) {

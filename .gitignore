@@ -8,3 +8,4 @@ test.js
 *.tgz
 release/
 installer/
+dev_notes*

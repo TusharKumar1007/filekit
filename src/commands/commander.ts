@@ -11,6 +11,7 @@ import { open, reveal } from "./open.js";
 import { printDirectory } from "./tree.js";
 import { measureTime } from "../utility/timer.js";
 import { errorC } from "../utility/colors.js";
+import { getDuplicates, printDuplicateInfo } from "../commands/duplicates.js";
 
 const program = new Command();
 
@@ -135,11 +136,17 @@ program
   .argument("<destination path>", "Path to the folder you want to copy it to.")
   .option("--force", "Overwrites already existing file or folder.")
   .option("--time", "outputs Execution time")
-  .action(async (src:string, dest:string, options:{force:boolean,time:boolean}) => {
-    await measureTime(async () => {
-      await copy(src, dest, options);
-    }, options.time);
-  });
+  .action(
+    async (
+      src: string,
+      dest: string,
+      options: { force: boolean; time: boolean },
+    ) => {
+      await measureTime(async () => {
+        await copy(src, dest, options);
+      }, options.time);
+    },
+  );
 program
   .command("mkdir")
   .description(commandListObj.mkdir)
@@ -181,5 +188,17 @@ program
       }, option.time);
     },
   );
+program
+  .command("duplicate")
+  .description(commandListObj.duplicate)
+  .argument("<path>", "Path to the folder you want to check duplicates in.")
+  .option("--time", "outputs Execution time")
+  .action(async (path: string, option: { time: boolean }) => {
+    await measureTime(async () => {
+      
+      const info = (await getDuplicates(path)) as DuplicatesMap;
+      await printDuplicateInfo(info);
+    }, option.time);
+  });
 
 await program.parseAsync(process.argv);

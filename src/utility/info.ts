@@ -1,4 +1,3 @@
-
 export const commandListObj = {
   info: "Show meta data of file. (e.g size,modified at,created at,extention). e.g --> filekit info <FILEPATH>",
   tree: "Prints all nested item in specified path in a tree format. e.g --> filekit tree <PATH>",
@@ -14,6 +13,8 @@ export const commandListObj = {
   mkdir: "Creates directory at the given path. e.g --> filekit mkdir <PATH>",
   touch: "Creates file at the given path. e.g --> filekit touch <PATH>",
   move: "Moves file or folder from onw location to another. e.g --> filekit move <SOURCE PATH> <DESTINATION PATH>",
+  duplicate:
+    "find all the duplicates file in given folder e.g --> filekit duplicate <PATH> ",
 };
 
 export const fileExtensions = {
