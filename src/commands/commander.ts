@@ -10,7 +10,7 @@ import { move } from "./move.js";
 import { open, reveal } from "./open.js";
 import { printDirectory } from "./tree.js";
 import { measureTime } from "../utility/timer.js";
-import { errorC } from "../utility/colors.js";
+import { errorC,linksOrInfoC } from "../utility/colors.js";
 import { getDuplicates, printDuplicateInfo } from "../commands/duplicates.js";
 
 const program = new Command();
@@ -42,8 +42,12 @@ program
         } else {
           fileDetailPrinter(data);
         }
-      } catch (e: unknown) {
-        if (e instanceof Error) {
+      } catch (e: any) {
+        if (e.code.toLowerCase() === "enoent") {
+          errorC(
+            `Invalid Path no such file or directory: ${linksOrInfoC(e.path, true)}`,
+          );
+        } else if (e instanceof Error) {
           errorC(e.message);
         } else {
           errorC("An unexpexted error occured");
